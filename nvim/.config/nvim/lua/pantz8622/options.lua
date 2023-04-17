@@ -1,7 +1,7 @@
 local options = {
   backup = false,                          -- creates a backup file
   clipboard = "unnamedplus",               -- allows neovim to access the system clipboard
-  cmdheight = 2,                           -- more space in the neovim command line for displaying messages
+  cmdheight = 1,                           -- more space in the neovim command line for displaying messages
   completeopt = { "menuone", "noselect" }, -- mostly just for cmp
   conceallevel = 0,                        -- so that `` is visible in markdown files
   cursorline = true,                       -- highlight the current line
@@ -16,6 +16,7 @@ local options = {
   hidden = true,                          -- don't unload buffer when it is abandoned
   hlsearch = true,                         -- highlight all matches on previous search pattern
   ignorecase = true,                       -- ignore case in search patterns
+  iskeyword = '@,48-57,192-255',
   linebreak = true,                        -- companion to wrap, don't split words
   mouse = "a",                             -- allow the mouse to be used in neovim
   number = true,                           -- set numbered lines

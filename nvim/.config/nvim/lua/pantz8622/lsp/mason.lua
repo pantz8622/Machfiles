@@ -4,6 +4,7 @@ local servers = {
 	"pyright",
 	"marksman",
   "ltex",
+  "quick_lint_js",
 }
 
 local settings = {

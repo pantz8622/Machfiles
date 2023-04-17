@@ -52,11 +52,23 @@ keymap("n", "ss", "cc", opts)
 keymap("n", "S", "C", opts)
 keymap("n", "sw", "ciw", opts)
 keymap("n", "sW", "ciW", opts)
+keymap("n", "s'", "ci'", opts)
+keymap("n", 's"', 'ci"', opts)
+keymap("n", "s(", "ci(", opts)
+keymap("n", "s[", "ci[", opts)
+keymap("n", "s{", "ci{", opts)
+keymap("n", "s<", "ci<", opts)
 
 local ops = { 'v', 'd', 'y', '~' }
 for _, op in ipairs(ops) do
   keymap("n", op .. "w", op .. "iw", opts)
   keymap("n", op .. "W", op .. "iW", opts)
+  keymap("n", op .. "'", op .. "i'", opts)
+  keymap("n", op .. '"', op .. 'i"', opts)
+  keymap("n", op .. "(", op .. "i(", opts)
+  keymap("n", op .. "[", op .. "i[", opts)
+  keymap("n", op .. "{", op .. "i{", opts)
+  keymap("n", op .. "<", op .. "i<", opts)
 end
 
 -- Visual --

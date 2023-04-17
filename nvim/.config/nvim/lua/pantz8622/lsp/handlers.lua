@@ -54,21 +54,23 @@ end
 local function lsp_keymaps(bufnr)
 	local opts = { noremap = true, silent = true }
 	local keymap = vim.api.nvim_buf_set_keymap
-	-- keymap(bufnr, "n", "<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-	-- keymap(bufnr, "n", "<leader>d", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 	keymap(bufnr, "n", "<leader>k", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-	keymap(bufnr, "n", "<leader>qi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-	keymap(bufnr, "n", "<leader>qr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
 	keymap(bufnr, "n", "<leader>l", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
-	keymap(bufnr, "n", "<leader>FF", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts)
 	keymap(bufnr, "n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
 	keymap(bufnr, "n", "<leader>s", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
 	keymap(bufnr, "n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+
 	keymap(bufnr, "n", "]d", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
 	keymap(bufnr, "n", "[d", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
+
+	keymap(bufnr, "n", "<leader>FF", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts)
+
 	keymap(bufnr, "n", "<leader>qd", "<cmd>lua vim.diagnostic.setqflist()<cr>", opts)
 	keymap(bufnr, "n", "<leader>qc", "<cmd>lua vim.lsp.buf.outgoing_calls()<cr>", opts)
 	keymap(bufnr, "n", "<leader>qC", "<cmd>lua vim.lsp.buf.incoming_calls()<cr>", opts)
+	keymap(bufnr, "n", "<leader>qi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+	keymap(bufnr, "n", "<leader>qr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+
 	keymap(bufnr, "n", "<leader>I", "<cmd>LspInfo<cr>", opts)
 end
 

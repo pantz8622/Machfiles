@@ -79,6 +79,20 @@ cmp.setup {
     -- Set `select` to `false` to only confirm explicitly selected items.
     ["<Space>"] = cmp.mapping(cmp.mapping.confirm { select = false }, { "i", "c" }),
     ["<Enter>"] = cmp.mapping(cmp.mapping.confirm { select = false }, { "i", "c" }),
+    ["<C-j>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end),
+    ["<C-k>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
