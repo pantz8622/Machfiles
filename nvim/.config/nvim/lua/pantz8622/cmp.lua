@@ -62,6 +62,44 @@ local function cmp_toggle_c()
   end
 end
 
+local function move_to_next(fallback)
+  if cmp.visible() then
+    cmp.select_next_item()
+  else
+    fallback()
+  end
+end
+
+local function move_to_prev(fallback)
+  if cmp.visible() then
+    cmp.select_prev_item()
+  else
+    fallback()
+  end
+end
+
+local function jump_to_next(fallback)
+  if cmp.visible() then
+    cmp.select_next_item()
+  elseif luasnip.expand_or_jumpable() then
+    luasnip.expand_or_jump()
+  elseif has_words_before() then
+    cmp.complete()
+  else
+    fallback()
+  end
+end
+
+local function jump_to_prev(fallback)
+  if cmp.visible() then
+    cmp.select_prev_item()
+  elseif luasnip.jumpable(-1) then
+    luasnip.jump(-1)
+  else
+    fallback()
+  end
+end
+
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -69,56 +107,20 @@ cmp.setup {
     end,
   },
   mapping = {
-    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
-    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
-    ["<A-Tab>"] = cmp.mapping({
+    ["<A-c>"] = cmp.mapping({
       i = cmp_toggle_i,
       c = cmp_toggle_c,
     }),
     -- Accept currently selected item. If none selected, `select` first item.
     -- Set `select` to `false` to only confirm explicitly selected items.
+    ["<A-Space>"] = cmp.mapping(cmp.mapping.confirm { select = false }, { "i", "c" }),
     ["<Space>"] = cmp.mapping(cmp.mapping.confirm { select = false }, { "i", "c" }),
     ["<Enter>"] = cmp.mapping(cmp.mapping.confirm { select = false }, { "i", "c" }),
-    ["<C-j>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      else
-        fallback()
-      end
-    end),
-    ["<C-k>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      else
-        fallback()
-      end
-    end),
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, {
-      "i",
-      "s",
-    }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, {
-      "i",
-      "s",
-    }),
+    ["<A-j>"] = cmp.mapping(move_to_next, {"i", "c"}),
+    ["<A-k>"] = cmp.mapping(move_to_prev, {"i", "c"}),
+    ["<Tab>"] = cmp.mapping(jump_to_next, {"i", "c"}),
+    ["<A-Tab>"] = cmp.mapping(jump_to_prev, {"i", "c"}),
+    ["<S-Tab>"] = cmp.mapping(jump_to_prev, {"i", "c"}),
   },
   formatting = {
     fields = { "kind", "abbr", "menu" },

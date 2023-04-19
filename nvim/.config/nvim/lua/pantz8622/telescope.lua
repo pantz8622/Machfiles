@@ -113,19 +113,20 @@ telescope.setup {
         ["<Up>"] = actions.cycle_history_prev,
         ["<Tab>"] = actions.move_selection_worse,
         ["<S-Tab>"] = actions.move_selection_better,
+        ["<A-Tab>"] = actions.move_selection_better,
 
-        ["<C-j>"] = actions.move_selection_next,
-        ["<C-k>"] = actions.move_selection_previous,
+        ["<A-j>"] = actions.move_selection_next,
+        ["<A-k>"] = actions.move_selection_previous,
 
         ["<esc>"] = actions.close,
 
-        ["<C-u>"] = actions.preview_scrolling_up,
-        ["<C-d>"] = actions.preview_scrolling_down,
+        ["<A-u>"] = actions.preview_scrolling_up,
+        ["<A-d>"] = actions.preview_scrolling_down,
         ["<PageUp>"] = actions.results_scrolling_up,
         ["<PageDown>"] = actions.results_scrolling_down,
 
         ["<CR>"] = actions.select_default,
-        ["<C-Space>"] = actions.toggle_selection,
+        ["<A-Space>"] = actions.toggle_selection,
         ["<C-S-q>"] = actions.send_to_qflist + actions.open_qflist,
         ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
         ["<C-/>"] = actions.which_key,
