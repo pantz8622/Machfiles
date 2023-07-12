@@ -165,22 +165,21 @@ vim.api.nvim_create_autocmd('BufRead', {
 local opts = { noremap = true, silent = true }
 local keymap = vim.api.nvim_set_keymap
 
-keymap("n", "<leader>gD", ":Telescope lsp_type_definitions<CR>", opts)
-keymap("n", "<leader>gd", ":Telescope lsp_definitions<CR>", opts)
-keymap("n", "<leader>gi", ":Telescope lsp_implementations<CR>", opts)
-
-keymap("n", "<leader>fa", "<cmd>lua require('pantz8622.telescope').find_files_from_project()<cr>", opts)
-keymap("n", "<leader>ga", "<cmd>lua require('pantz8622.telescope').grep_files_from_project()<cr>", opts)
-
-keymap("n", "<leader>ff", "<cmd>lua require('pantz8622.telescope').find_files_from_buffers()<cr>", opts)
-keymap("n", "<leader>gg", "<cmd>lua require('pantz8622.telescope').grep_files_from_buffers()<cr>", opts)
-
-keymap("n", "<leader>gr", ":Telescope lsp_references<CR>", opts)
-keymap("n", "<leader>gc", ":Telescope lsp_outgoing_calls<CR>", opts)
-keymap("n", "<leader>gC", ":Telescope lsp_incoming_calls<CR>", opts)
-
+keymap("n", "<leader>fD", ":Telescope lsp_type_definitions<CR>", opts)
+keymap("n", "<leader>fd", ":Telescope lsp_definitions<CR>", opts)
+keymap("n", "<leader>fi", ":Telescope lsp_implementations<CR>", opts)
+keymap("n", "<leader>fr", ":Telescope lsp_references<CR>", opts)
+keymap("n", "<leader>fc", ":Telescope lsp_outgoing_calls<CR>", opts)
+keymap("n", "<leader>fC", ":Telescope lsp_incoming_calls<CR>", opts)
 keymap("n", "<leader>fq", ":Telescope quickfix<CR>", opts)
-keymap("n", "<leader>fd", ":lua require('telescope.builtin').diagnostics()<CR>", opts)
+keymap("n", "<leader>fh", ":lua require('telescope.builtin').diagnostics()<CR>", opts)
+
+keymap("n", "<leader>ff", "<cmd>lua require('pantz8622.telescope').find_files_from_project()<cr>", opts)
+keymap("n", "<leader>fw", "<cmd>lua require('pantz8622.telescope').grep_files_from_project()<cr>", opts)
+
+keymap("n", "<leader>sf", "<cmd>lua require('pantz8622.telescope').find_files_from_buffers()<cr>", opts)
+keymap("n", "<leader>sw", "<cmd>lua require('pantz8622.telescope').grep_files_from_buffers()<cr>", opts)
+
 
 M = {}
 

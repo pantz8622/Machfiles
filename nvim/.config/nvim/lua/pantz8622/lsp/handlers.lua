@@ -56,14 +56,14 @@ local function lsp_keymaps(bufnr)
 	local keymap = vim.api.nvim_buf_set_keymap
 	keymap(bufnr, "n", "<leader>k", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 	keymap(bufnr, "n", "<leader>l", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
-	keymap(bufnr, "n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+	keymap(bufnr, "n", "<leader>r", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
 	keymap(bufnr, "n", "<leader>s", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
 	keymap(bufnr, "n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
 
-	keymap(bufnr, "n", "]d", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
-	keymap(bufnr, "n", "[d", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
+	keymap(bufnr, "n", "]h", "<cmd>lua vim.diagnostic.goto_next({buffer=0})<cr>", opts)
+	keymap(bufnr, "n", "[h", "<cmd>lua vim.diagnostic.goto_prev({buffer=0})<cr>", opts)
 
-	keymap(bufnr, "n", "<leader>FF", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts)
+	keymap(bufnr, "n", "<leader>F", "<cmd>lua vim.lsp.buf.format{ async = true }<cr>", opts)
 
 	keymap(bufnr, "n", "<leader>qd", "<cmd>lua vim.diagnostic.setqflist()<cr>", opts)
 	keymap(bufnr, "n", "<leader>qc", "<cmd>lua vim.lsp.buf.outgoing_calls()<cr>", opts)

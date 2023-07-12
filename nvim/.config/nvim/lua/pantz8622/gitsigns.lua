@@ -53,29 +53,29 @@ gitsigns.setup {
     end
 
     -- Navigation
-    map('n', ']h', function()
-      if vim.wo.diff then return ']h' end
+    map('n', ']g', function()
+      if vim.wo.diff then return ']g' end
       vim.schedule(function() gs.next_hunk() end)
       return '<Ignore>'
     end, {expr=true})
 
-    map('n', '[h', function()
-      if vim.wo.diff then return '[h' end
+    map('n', '[g', function()
+      if vim.wo.diff then return '[g' end
       vim.schedule(function() gs.prev_hunk() end)
       return '<Ignore>'
     end, {expr=true})
 
     -- Actions
-    map('n', '<leader>h', gs.preview_hunk)
+    map('n', '<leader>g', gs.preview_hunk)
     map('n', '<leader>b', function() gs.blame_line{full=false} end)
-    map("n", "<leader>qh", gs.setqflist)
+    map("n", "<leader>qg", gs.setqflist)
 
     -- Text object
-    map("n", "<S-v>h", ":Gitsigns select_hunk<CR>")
-    map("n", "sh", ":Gitsigns select_hunk<CR>c")
+    map("n", "<S-v>g", ":Gitsigns select_hunk<CR>")
+    map("n", "sg", ":Gitsigns select_hunk<CR>c")
     local ops = { 'd', 'y', '~' }
     for _, op in ipairs(ops) do
-      map("n", op .. "h", ":Gitsigns select_hunk<CR>" .. op)
+      map("n", op .. "g", ":Gitsigns select_hunk<CR>" .. op)
     end
   end
 }
