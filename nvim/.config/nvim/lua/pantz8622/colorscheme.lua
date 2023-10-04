@@ -1,6 +1,6 @@
 local colorscheme = "tokyonight"
 
-local status_ok, _ = pcall(vim.cmd, "colorscheme " .. colorscheme)
-if not status_ok then
+if not pcall(vim.cmd, "colorscheme " .. colorscheme) then
+  print("failed to set colorscheme")
   return
 end

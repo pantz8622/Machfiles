@@ -1,112 +1,110 @@
-local status_ok, telescope = pcall(require, "telescope")
-if not status_ok then
-  return
-end
-
-local in_git_repo = require("pantz8622.utils").in_git_repo
-local get_git_root = require("pantz8622.utils").get_git_root
+local telescope = require('telescope')
 
 local actions = require "telescope.actions"
+local state = require "telescope.actions.state"
 local builtin = require "telescope.builtin"
 local themes = require('telescope.themes')
 
-local function find_files_from_project()
-  local rg_opts = {'--hidden', '--no-ignore'}
-  local ignore = {
+local root = vim.fn.fnamemodify('.', ':p')
+local cwd = vim.fn.fnamemodify('.', ':p')
+
+local function find_files_from(base, opts)
+  if opts == nil then opts = { } end
+  if opts.rg_opts == nil then opts.rg_opts = {'--hidden', '--no-ignore'} end
+  if opts.include == nil then opts.include = { } end
+  if opts.ignore == nil then opts.ignore = {
     '**/.git',
-  }
+  } end
+  cwd = base
 
-  local base = vim.fn.fnamemodify('.', ':p')
-  if in_git_repo() then
-    base = get_git_root()
+  local ff_opts = themes.get_dropdown{previewer = false}
+  ff_opts.cwd = base
+  ff_opts.find_command = {'rg', '--files', unpack(opts.rg_opts)}
+  table.insert(ff_opts.find_command, '--iglob')
+  for _, i in ipairs(opts.ignore) do
+    table.insert(ff_opts.find_command, '!'..i)
   end
+  for _, i in ipairs(opts.include) do
+    table.insert(ff_opts.find_command, i)
+  end
+  table.insert(ff_opts.find_command, base)
+  builtin.find_files(ff_opts)
+end
 
-  local opts = themes.get_dropdown{previewer = false}
-  opts.cwd = base
-  opts.find_command = {'rg', '--files', unpack(rg_opts)}
-  table.insert(opts.find_command, '--iglob')
-  for _, i in ipairs(ignore) do
-    table.insert(opts.find_command, '!'..i)
-  end
-  table.insert(opts.find_command, base)
-  builtin.find_files(opts)
+local function find_files_from_project()
+  find_files_from(root)
+end
+
+local function find_files_from_current()
+  find_files_from(vim.fn.fnamemodify('.', ':p'))
 end
 
 local function find_files_from_buffers()
-  local rg_opts = {'--hidden', '--no-ignore'}
-  local ignore = {
-    '**/.git',
-  }
-
-  local base = vim.fn.fnamemodify('.', ':p')
-  if in_git_repo() then
-    base = get_git_root()
-  end
-
-  -- find buffers visible at bufferline
   local bufs = {}
-  for _,e in ipairs(require('pantz8622.bufferline').get_elements().elements) do
+  for _,e in ipairs(require('bufferline').get_elements().elements) do
     if vim.fn.isdirectory(e.path) ~= 1 then
       table.insert(bufs, e.path)
     end
   end
 
-  local opts = themes.get_dropdown{previewer = false}
+  find_files_from(root, { ignore = {'*'}, include = bufs})
+end
+
+local function grep_from(base, opts)
+  if opts == nil then opts = { } end
+  if opts.use_regex == nil then opts.use_regex = false end
+  if opts.grep_open_files == nil then opts.grep_open_files = false end
+  if opts.search_dirs == nil then opts.search_dirs = { } end
+  if opts.additional_args == nil then opts.additional_args = {
+    '--hidden',
+    '--no-ignore',
+    '--glob', '!**/.git',
+  } end
+
   opts.cwd = base
-  opts.find_command = {'rg', '--files', unpack(rg_opts)}
-  if #ignore > 0 or #bufs > 0 then
-    table.insert(opts.find_command, '--iglob')
-    for _, i in ipairs(ignore) do
-      table.insert(opts.find_command, '!'..i)
-    end
-    for _, buf in ipairs(bufs) do
-      table.insert(opts.find_command, buf)
-    end
-    builtin.find_files(opts)
+  if opts.search == nil then
+    builtin.live_grep(opts)
+  else
+    builtin.grep_string(opts)
   end
 end
 
-local function grep_files_from_project()
-  local base = vim.fn.fnamemodify('.', ':p')
-  if in_git_repo() then
-    base = get_git_root()
+local function get_selected(opts)
+  local picker = state.get_current_picker(opts)
+  local selected = { }
+  if next(picker:get_multi_selection()) ~= nil then
+    for _, entry in ipairs(picker:get_multi_selection()) do
+      table.insert(selected, entry[1])
+    end
   end
-
-  local opts = {
-    cwd = base,
-    additional_args = {
-      '--hidden',
-      '--no-ignore',
-      '--glob', '!**/.git',
-    },
-  }
-  builtin.live_grep(opts)
+  return selected
 end
 
-local function grep_files_from_buffers()
-  local base = vim.fn.fnamemodify('.', ':p')
-  if in_git_repo() then
-    base = get_git_root()
-  end
+actions.grep_selected = function(opts)
+  local selected = get_selected(opts)
+  pcall(grep_from, cwd, { search_dirs = selected })
+end
 
-  local opts = {
-    cwd = base,
-    grep_open_files = true,
-    additional_args = {
-      '--hidden',
-      '--no-ignore',
-      '--glob', '!**/.git',
-    }
-  }
-  builtin.live_grep(opts)
+actions.fuzzy_selected = function(opts)
+  local selected = get_selected(opts)
+  pcall(grep_from, cwd, { search_dirs = selected, search = '.*', use_regex = true })
+end
+
+actions.edit_selected = function (opts)
+  local selected = get_selected(opts)
+  if next(selected) == nil then
+    actions.file_edit(opts)
+  else
+    for _, file in ipairs(selected) do
+      vim.cmd('silent edit! ' .. file)
+    end
+  end
 end
 
 telescope.setup {
   defaults = {
-
     prompt_prefix = " ",
     selection_caret = " ",
-
     mappings = {
       i = {
         ["<Down>"] = actions.cycle_history_next,
@@ -125,31 +123,35 @@ telescope.setup {
         ["<PageUp>"] = actions.results_scrolling_up,
         ["<PageDown>"] = actions.results_scrolling_down,
 
-        ["<CR>"] = actions.select_default,
+        ["<CR>"] = actions.edit_selected,
         ["<A-Space>"] = actions.toggle_selection,
+        ["<C-a>"] = actions.select_all,
+        ["<C-g>"] = actions.grep_selected,
+        ["<C-f>"] = actions.fuzzy_selected,
         ["<C-S-q>"] = actions.send_to_qflist + actions.open_qflist,
         ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
-        ["<C-/>"] = actions.which_key,
       },
     },
   },
-  pickers = {
-    -- Default configuration for builtin pickers goes here:
-    -- picker_name = {
-    --   picker_config_key = value,
-    --   ...
-    -- }
-    -- Now the picker_config_key will be applied every time you call this
-    -- builtin picker
-  },
-  extensions = {
-    -- Your extension configuration goes here:
-    -- extension_name = {
-    --   extension_config_key = value,
-    -- }
-    -- please take a look at the readme of the extension you want to configure
-  },
 }
+
+-- keymaps
+local opts = { noremap = true, silent = true }
+
+vim.keymap.set("n", "fd", builtin.lsp_definitions, opts)
+vim.keymap.set("n", "fD", builtin.lsp_type_definitions, opts)
+vim.keymap.set("n", "fi", builtin.lsp_implementations, opts)
+vim.keymap.set("n", "fr", builtin.lsp_references, opts)
+vim.keymap.set("n", "fc", builtin.lsp_outgoing_calls, opts)
+vim.keymap.set("n", "fC", builtin.lsp_incoming_calls, opts)
+vim.keymap.set("n", "fq", builtin.quickfix, opts)
+vim.keymap.set("n", "fh", builtin.diagnostics, opts)
+
+vim.keymap.set("n", "ff", find_files_from_project, opts)
+vim.keymap.set("n", "f.", find_files_from_current, opts)
+vim.keymap.set("n", "fb", find_files_from_buffers, opts)
+
+vim.keymap.set("n", "<C-f>", builtin.current_buffer_fuzzy_find, opts)
 
 -- workaround for folding bug
 vim.api.nvim_create_autocmd('BufRead', {
@@ -161,31 +163,8 @@ vim.api.nvim_create_autocmd('BufRead', {
    end
 })
 
--- keymaps
-local opts = { noremap = true, silent = true }
-local keymap = vim.api.nvim_set_keymap
-
-keymap("n", "<leader>fD", ":Telescope lsp_type_definitions<CR>", opts)
-keymap("n", "<leader>fd", ":Telescope lsp_definitions<CR>", opts)
-keymap("n", "<leader>fi", ":Telescope lsp_implementations<CR>", opts)
-keymap("n", "<leader>fr", ":Telescope lsp_references<CR>", opts)
-keymap("n", "<leader>fc", ":Telescope lsp_outgoing_calls<CR>", opts)
-keymap("n", "<leader>fC", ":Telescope lsp_incoming_calls<CR>", opts)
-keymap("n", "<leader>fq", ":Telescope quickfix<CR>", opts)
-keymap("n", "<leader>fh", ":lua require('telescope.builtin').diagnostics()<CR>", opts)
-
-keymap("n", "<leader>ff", "<cmd>lua require('pantz8622.telescope').find_files_from_project()<cr>", opts)
-keymap("n", "<leader>fw", "<cmd>lua require('pantz8622.telescope').grep_files_from_project()<cr>", opts)
-
-keymap("n", "<leader>sf", "<cmd>lua require('pantz8622.telescope').find_files_from_buffers()<cr>", opts)
-keymap("n", "<leader>sw", "<cmd>lua require('pantz8622.telescope').grep_files_from_buffers()<cr>", opts)
-
-
-M = {}
-
-M.find_files_from_project = find_files_from_project
-M.find_files_from_buffers = find_files_from_buffers
-M.grep_files_from_project = grep_files_from_project
-M.grep_files_from_buffers = grep_files_from_buffers
-
-return M
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    root = vim.lsp.buf.list_workspace_folders()[1]
+  end,
+})

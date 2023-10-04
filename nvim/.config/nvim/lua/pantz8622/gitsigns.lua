@@ -1,56 +1,24 @@
-local status_ok, gitsigns = pcall(require, "gitsigns")
-if not status_ok then
-  return
-end
+local gitsigns = require('gitsigns')
 
 gitsigns.setup {
+  max_file_length = 40000,
   signs = {
     add          = { text = "▎" },
     change       = { text = "▎" },
-    delete       = { text = "契" },
-    topdelete    = { text = "契" },
+    delete       = { text = "" },
+    topdelete    = { text = "" },
     changedelete = { text = "▎" },
-  },
-  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
-  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
-  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
-  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
-  watch_gitdir = {
-    interval = 1000,
-    follow_files = true,
-  },
-  attach_to_untracked = true,
-  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
-  current_line_blame_opts = {
-    virt_text = true,
-    virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-    delay = 1000,
-    ignore_whitespace = false,
-  },
-  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
-  sign_priority = 6,
-  update_debounce = 100,
-  status_formatter = nil, -- Use default
-  max_file_length = 40000,
-  preview_config = {
-    -- Options passed to nvim_open_win
-    border = "single",
-    style = "minimal",
-    relative = "cursor",
-    row = 0,
-    col = 1,
-  },
-  yadm = {
-    enable = false,
   },
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
 
     local function map(mode, l, r, opts)
-      opts = { noremap = true, silent = true }
+      opts = opts or { }
       opts.buffer = bufnr
       vim.keymap.set(mode, l, r, opts)
     end
+
+    local opts = { noremap = true, silent = true }
 
     -- Navigation
     map('n', ']g', function()
@@ -66,12 +34,12 @@ gitsigns.setup {
     end, {expr=true})
 
     -- Actions
-    map('n', '<leader>g', gs.preview_hunk)
-    map('n', '<leader>b', function() gs.blame_line{full=false} end)
-    map("n", "<leader>qg", gs.setqflist)
+    map('n', '<leader>g', gs.preview_hunk, opts)
+    map('n', '<leader>b', function() gs.blame_line{full=false} end, opts)
+    map("n", "<leader>qg", gs.setqflist, opts)
 
     -- Text object
-    map("n", "<S-v>g", ":Gitsigns select_hunk<CR>")
+    map("n", "vg", ":Gitsigns select_hunk<CR>")
     map("n", "sg", ":Gitsigns select_hunk<CR>c")
     local ops = { 'd', 'y', '~' }
     for _, op in ipairs(ops) do
@@ -80,5 +48,3 @@ gitsigns.setup {
   end
 }
 
--- Cowork with Comment.nvim
-vim.api.nvim_set_keymap("n", "ch", ":Gitsigns select_hunk<CR>c", { noremap = false, silent = true })
