@@ -1,4 +1,4 @@
--- Apperence
+-- Appearance
 local signs = {
   { name = "DiagnosticSignError", text = "" },
   { name = "DiagnosticSignWarn", text = "" },
@@ -21,7 +21,7 @@ vim.diagnostic.config {
     focusable = true,
     style = "minimal",
     border = "rounded",
-    source = "always",
+    source = false,
     header = "",
     prefix = "",
   },
