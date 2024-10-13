@@ -35,7 +35,7 @@ require('pckr').add{
   'RRethy/vim-illuminate',
   'pantz8622/ctoggle',
   { "iamcco/markdown-preview.nvim", run = "cd app && npm install" },
-  { 'nvim-telescope/telescope.nvim', tag = '0.1.3',
+  { 'nvim-telescope/telescope.nvim',
     requires = {{ 'nvim-lua/plenary.nvim' }}},
   "nvim-lua/plenary.nvim",
   { 'L3MON4D3/LuaSnip', run = 'make install_jsregexp' },
@@ -45,4 +45,5 @@ require('pckr').add{
   end,
   },
   'lewis6991/gitsigns.nvim',
+  'lukas-reineke/indent-blankline.nvim',
 }
